@@ -10,6 +10,16 @@ describe Guard::LiveReload::Reactor do
       new_live_reactor.reload_browser(paths)
     end
 
+    it "by default doesn't send notification" do
+      expect(::Guard::Notifier).to_not receive(:notify)
+      new_live_reactor.reload_browser(paths)
+    end
+
+    it "optionally pushes notification" do
+      expect(::Guard::Notifier).to receive(:notify).with(kind_of(String), have_key(:title))
+      new_live_reactor(notify: true).reload_browser(paths)
+    end
+
     it "each web socket receives send with data containing default options for each path modified" do
       reactor = new_live_reactor
       paths.each do |path|
